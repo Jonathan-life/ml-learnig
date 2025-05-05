@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ducument</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.5/lib/p5.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+
+  <script>
+    let handPose
+    let video
+    let hands = []
+
+
+    function preload(){
+      handPose = ml5.handPose()
+    }
+
+    function setup(){
+      createCanvas(640, 480)
+
+      video = createCapture(VIDEO)
+      video.size(640, 480)
+      video.hide()
+
+      handPose.detectStart(video, gotHands)
+    }
+
+    function draw(){
+      image(video, 0, 0, width, height)
+
+      //verificando si detectamos una mano
+      if(hands.length > 0){
+        //identificar las ubicacion de los dedos
+        let finger = hands[0].index_finger_tip
+        let thumb = hands[0].thumb_tip
+        //dibujar un circulo sobre la ubicacion
+        let centerX = (finger.x + thumb.x) / 2
+        let centerY = (finger.y + thumb.y) / 2
+
+        //distacia y tamaño entre los dedos 
+        let pinch = dist(finger.x, finger.y, thumb.x, thumb.y) //PL5
+
+        //renderizamos el circulo
+        fill(255, 0,0)
+        stroke(255)
+        strokeWeight(2)
+        circle(centerX, centerY, pinch)
+      }
+    }
+
+    function gotHands(results){
+      hands = results
+    }
+  </script>
+
+</body>
+</html>

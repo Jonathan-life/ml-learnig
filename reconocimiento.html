@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Classification</title>
+  <style>
+    body {
+      background-color: antiquewhite;
+    }
+    #resultado {
+      font-size: 20px;
+      color: black;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="resultado"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.5/lib/p5.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+  <script>
+    let classifier
+    let img
+    let capa
+
+    function preload() {
+      classifier = ml5.imageClassifier('MobileNet');
+      // Especificamos una ruta relativa para la imagen
+      img = loadImage('images/animal-1.jpg');
+            // Obtenemos el div donde mostraremos el resultado
+      capa = document.querySelector("#resultado"); 
+    }
+
+    function setup() {
+      // Creamos un canvas de 500x400
+      createCanvas(500, 400);
+      // Mostramos la imagen en el canvas
+      image(img, 0, 0, width, height);
+
+        classifier.classify(img, gotResult);
+      }
+      
+
+    
+
+    function gotResult( results) {
+
+      console.log(results)
+
+      // Obtenemos la etiqueta y la confianza
+      const confianza = (nf(results[0].confidence, 0, 2) * 100); // Multiplicamos por 100 para mostrar en porcentaje
+      // Mostramos el resultado en el div
+      capa.innerHTML = results[0].label + " " + confianza + "%"
+    }
+  </script>
+</body>
+</html>
