@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Classification</title>
+  <style>
+    body {
+      background-color: antiquewhite;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    #resultado {
+      font-size: 20px;
+      color: black;
+      margin-top: 20px;
+    }
+    select {
+      font-size: 16px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Clasificador de Imágenes</h2>
+  <select id="selector">
+    <option value="images/animal-1.jpg">Animal 1</option>
+    <option value="images/animal-2.jpg">Animal 2</option>
+    <option value="images/animal-3.jpg">Animal 3</option>
+    <!-- Puedes agregar más imágenes aquí -->
+  </select>
+
+  <div id="resultado">Selecciona una imagen del menú.</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.5/lib/p5.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+  <script>
+    let classifier;
+    let img;
+    let capa;
+    let currentImagePath = 'images/animal-1.jpg'; // valor inicial por defecto
+
+    function preload() {
+      classifier = ml5.imageClassifier('MobileNet');
+      img = loadImage(currentImagePath);
+      capa = document.querySelector("#resultado"); 
+    }
+
+    function setup() {
+      createCanvas(500, 400);
+      image(img, 0, 0, width, height);
+      classifier.classify(img, gotResult);
+
+      // Manejar selección del usuario
+      document.getElementById("selector").addEventListener("change", function() {
+        currentImagePath = this.value;
+        loadImage(currentImagePath, newImg => {
+          img = newImg;
+          image(img, 0, 0, width, height);
+          classifier.classify(img, gotResult);
+        });
+      });
+    }
+
+    function gotResult(results) {
+      console.log(results);
+      const confianza = (nf(results[0].confidence, 0, 2) * 100);
+      capa.innerHTML = results[0].label + " " + confianza + "%";
+    }
+  </script>
+</body>
+</html>
